@@ -15,6 +15,9 @@ import { CategoriesModule } from './categories/categories.module';
 import { ProductsModule } from './products/products.module';
 import { Category } from './categories/entities/category.entity';
 import { Product } from './products/entities/product.entity';
+import { CartModule } from './cart/cart.module';
+import { Cart } from './cart/entities/cart.entity';
+import { CartItem } from './cart/entities/cart-item.entity';
 
 @Module({
   imports: [
@@ -32,7 +35,7 @@ import { Product } from './products/entities/product.entity';
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_DATABASE'),
-        entities: [User, Category, Product], // Add other entities here as you create them
+        entities: [User, Category, Product, Cart, CartItem], // Add other entities here as you create them
         synchronize: configService.get<boolean>('DB_SYNCHRONIZE', false), // Auto-create schema (dev only)
         autoLoadEntities: true, // Automatically load entities (recommended)
       }),
@@ -41,7 +44,8 @@ import { Product } from './products/entities/product.entity';
     AuthModule,
     JwtModule.register({}),
     CategoriesModule,
-    ProductsModule, // Register JwtModule globally
+    ProductsModule,
+    CartModule,
     // Add other modules like ProductsModule, OrdersModule here later
   ],
   controllers: [],
