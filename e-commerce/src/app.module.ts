@@ -23,6 +23,7 @@ import { Order } from './orders/entities/order.entity';
 import { OrderItem } from './orders/entities/order-item.entity';
 import { ReviewsModule } from './reviews/reviews.module';
 import { Review } from './reviews/entities/review.entity';
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
   imports: [
@@ -62,6 +63,7 @@ import { Review } from './reviews/entities/review.entity';
     CartModule,
     OrdersModule,
     ReviewsModule,
+    PaymentsModule,
   ],
   controllers: [],
   providers: [ApiCounterMiddleware],

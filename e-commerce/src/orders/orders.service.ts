@@ -494,4 +494,23 @@ export class OrdersService {
     product.stockQuantity = newStock;
     return queryRunner.manager.save(Product, product);
   }
+
+  async updateOrderAfterPayment(
+    orderId: string,
+    paymentIntentId: string,
+    newStatus: OrderStatus,
+  ): Promise<Order | null> {
+    const order = await this.ordersRepository.findOne({
+      where: { id: orderId },
+    });
+    if (!order) {
+      console.error(`Webhook: Order with ID "${orderId}" not found.`);
+      // Depending on retry logic of webhook, you might throw or just log
+      return null;
+    }
+    order.paymentIntentId = paymentIntentId;
+    order.status = newStatus;
+    // Potentially add more logic here, like sending notifications
+    return this.ordersRepository.save(order);
+  }
 }
