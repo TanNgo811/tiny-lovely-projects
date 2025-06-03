@@ -29,9 +29,6 @@ export class ApiCounterMiddleware implements NestMiddleware {
         });
 
         if (payload && payload.sub) {
-          console.log(
-            `API call by user: ${payload.email} (ID: ${payload.sub})`,
-          );
           // Asynchronously increment the API call count
           this.incrementApiCallCount(payload.sub).catch((error) =>
             console.error('Failed to increment API call count:', error),

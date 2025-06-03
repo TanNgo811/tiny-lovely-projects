@@ -11,6 +11,10 @@ import { AuthModule } from './auth/auth.module';
 import { User } from './users/entities/user.entity'; // Import User entity
 import { ApiCounterMiddleware } from './middleware/api-counter.middleware';
 import { JwtModule } from '@nestjs/jwt';
+import { CategoriesModule } from './categories/categories.module';
+import { ProductsModule } from './products/products.module';
+import { Category } from './categories/entities/category.entity';
+import { Product } from './products/entities/product.entity';
 
 @Module({
   imports: [
@@ -28,14 +32,16 @@ import { JwtModule } from '@nestjs/jwt';
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_DATABASE'),
-        entities: [User], // Add other entities here as you create them
+        entities: [User, Category, Product], // Add other entities here as you create them
         synchronize: configService.get<boolean>('DB_SYNCHRONIZE', false), // Auto-create schema (dev only)
         autoLoadEntities: true, // Automatically load entities (recommended)
       }),
     }),
     UsersModule,
     AuthModule,
-    JwtModule.register({}), // Register JwtModule globally
+    JwtModule.register({}),
+    CategoriesModule,
+    ProductsModule, // Register JwtModule globally
     // Add other modules like ProductsModule, OrdersModule here later
   ],
   controllers: [],

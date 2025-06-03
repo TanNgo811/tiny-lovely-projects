@@ -107,7 +107,6 @@ export class UsersService {
 
   async incrementApiCallCount(userId: string): Promise<void> {
     const user = await this.findOne(userId);
-    console.log('user', user);
     user.apiCallCount += 1;
     await this.usersRepository.save(user);
   }

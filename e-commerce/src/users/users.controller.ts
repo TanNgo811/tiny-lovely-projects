@@ -20,11 +20,11 @@ import {
   ApiOperation,
   ApiResponse,
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'; // We'll create this soon
-// import { RolesGuard } from '../auth/guards/roles.guard'; // For role-based access
-// import { Roles } from '../auth/decorators/roles.decorator'; // For role-based access
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UserRole, User } from './entities/user.entity';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 @ApiTags('Users')
 @Controller('users')
@@ -43,19 +43,19 @@ export class UsersController {
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 409, description: 'Conflict. Email already exists.' })
-  // @UseGuards(JwtAuthGuard, RolesGuard) // Example if you add Roles
-  // @Roles(UserRole.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard) // Protect this route
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiBearerAuth() // Indicates JWT is required for Swagger
   @ApiOperation({
     summary: 'Get all users (requires authentication, typically Admin)',
   })
-  // @Roles(UserRole.ADMIN) // Uncomment if you implement RolesGuard
+  @Roles(UserRole.ADMIN)
   findAll() {
     return this.usersService.findAll();
   }
@@ -111,7 +111,7 @@ export class UsersController {
   @ApiOperation({
     summary: 'Delete a user (requires authentication, typically Admin)',
   })
-  // @Roles(UserRole.ADMIN) // Uncomment if you implement RolesGuard
+  @Roles(UserRole.ADMIN)
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.usersService.remove(id);
   }
