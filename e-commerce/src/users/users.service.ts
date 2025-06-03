@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, ConflictException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User, UserRole } from './entities/user.entity';
@@ -16,7 +21,9 @@ export class UsersService {
   async create(createUserDto: CreateUserDto): Promise<User> {
     const { email, password, firstName, lastName, role } = createUserDto;
 
-    const existingUser = await this.usersRepository.findOne({ where: { email } });
+    const existingUser = await this.usersRepository.findOne({
+      where: { email },
+    });
     if (existingUser) {
       throw new ConflictException('Email already exists');
     }
@@ -38,7 +45,8 @@ export class UsersService {
       return result as User; // Or map to a UserResponseDto
     } catch (error) {
       // Handle specific database errors, e.g., unique constraint violation if not caught above
-      if (error.code === '23505') { // PostgreSQL unique violation
+      if (error.code === '23505') {
+        // PostgreSQL unique violation
         throw new ConflictException('Email already exists.');
       }
       throw new InternalServerErrorException('Error creating user.');
@@ -69,7 +77,10 @@ export class UsersService {
     // If password is being updated, hash it
     if (updateUserDto.password) {
       const saltOrRounds = 10;
-      updateUserDto.password = await bcrypt.hash(updateUserDto.password, saltOrRounds);
+      updateUserDto.password = await bcrypt.hash(
+        updateUserDto.password,
+        saltOrRounds,
+      );
     }
 
     // Merge existing user with update DTO

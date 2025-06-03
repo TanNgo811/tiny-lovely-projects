@@ -11,9 +11,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     private readonly configService: ConfigService,
     private readonly usersService: UsersService,
   ) {
-    let secretOrKey = configService.get<string>('JWT_SECRET');
+    const secretOrKey = configService.get<string>('JWT_SECRET');
     if (!secretOrKey) {
-        throw new Error('JWT_SECRET is not defined in the configuration.');
+      throw new Error('JWT_SECRET is not defined in the configuration.');
     }
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -22,7 +22,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: any): Promise<Omit<User, 'password' | 'hashPassword'>> {
+  async validate(
+    payload: any,
+  ): Promise<Omit<User, 'password' | 'hashPassword'>> {
     // Payload here is the decoded JWT (e.g., { sub: userId, email: userEmail, role: userRole })
     const user = await this.usersService.findOne(payload.sub); // 'sub' usually stores the user ID
     if (!user) {

@@ -1,8 +1,7 @@
-import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service'; // Adjust path
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { User, UserRole } from '../users/entities/user.entity'; // Adjust path
 import { ConfigService } from '@nestjs/config';
@@ -15,7 +14,10 @@ export class AuthService {
     private configService: ConfigService,
   ) {}
 
-  async validateUser(email: string, pass: string): Promise<Omit<User, 'password'> | null> {
+  async validateUser(
+    email: string,
+    pass: string,
+  ): Promise<Omit<User, 'password'> | null> {
     const user = await this.usersService.findByEmail(email);
     if (user && (await bcrypt.compare(pass, user.password))) {
       const { password, ...result } = user;
@@ -24,8 +26,12 @@ export class AuthService {
     return null;
   }
 
-  async login(userPayload: Omit<User, 'password'>) {
-    const payload = { email: userPayload.email, sub: userPayload.id, role: userPayload.role };
+  login(userPayload: Omit<User, 'password'>) {
+    const payload = {
+      email: userPayload.email,
+      sub: userPayload.id,
+      role: userPayload.role,
+    };
     return {
       access_token: this.jwtService.sign(payload, {
         secret: this.configService.get<string>('JWT_SECRET'),
