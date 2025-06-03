@@ -98,4 +98,17 @@ export class UsersService {
       throw new NotFoundException(`User with ID "${id}" not found`);
     }
   }
+
+  async incrementLoginCount(userId: string): Promise<void> {
+    const user = await this.findOne(userId);
+    user.loginCount += 1;
+    await this.usersRepository.save(user);
+  }
+
+  async incrementApiCallCount(userId: string): Promise<void> {
+    const user = await this.findOne(userId);
+    console.log('user', user);
+    user.apiCallCount += 1;
+    await this.usersRepository.save(user);
+  }
 }

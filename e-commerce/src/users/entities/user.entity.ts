@@ -39,6 +39,12 @@ export class User {
   })
   role: UserRole;
 
+  @Column({ default: 0 })
+  loginCount: number;
+
+  @Column({ default: 0 })
+  apiCallCount: number;
+
   @Exclude()
   @Column({ nullable: true })
   refreshToken: string;
@@ -57,4 +63,3 @@ export class User {
     }
   }
 }
-

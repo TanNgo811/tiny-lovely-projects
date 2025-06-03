@@ -43,8 +43,11 @@ export class AuthService {
       this.generateRefreshToken(payload),
     ]);
 
-    // Update user's refresh token in database
-    await this.updateRefreshToken(userPayload.id, refreshToken);
+    // Update user's refresh token in database and increment login count
+    await Promise.all([
+      this.updateRefreshToken(userPayload.id, refreshToken),
+      this.usersService.incrementLoginCount(userPayload.id),
+    ]);
 
     return {
       access_token: accessToken,
