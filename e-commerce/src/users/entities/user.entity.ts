@@ -39,6 +39,10 @@ export class User {
   })
   role: UserRole;
 
+  @Exclude()
+  @Column({ nullable: true })
+  refreshToken: string;
+
   @CreateDateColumn()
   createdAt: Date;
 
@@ -53,3 +57,4 @@ export class User {
     }
   }
 }
+

@@ -23,6 +23,7 @@ import {
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { GetUser } from './decorators/get-user.decorator';
 import { User } from '../users/entities/user.entity';
+import { RefreshTokenGuard } from './guards/refresh-token.guard';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -86,5 +87,45 @@ export class AuthController {
     // request.user is populated by JwtStrategy
     // The GetUser decorator makes it cleaner
     return user;
+  }
+
+  @Post('refresh')
+  @UseGuards(RefreshTokenGuard)
+  @ApiBearerAuth()
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Refresh access token using refresh token' })
+  @ApiResponse({
+    status: 200,
+    description: 'Tokens refreshed successfully.',
+  })
+  @ApiResponse({ status: 401, description: 'Invalid refresh token.' })
+  async refreshTokens(
+    @Request()
+    req: {
+      user: { id: string };
+      headers: { authorization: string };
+    },
+  ) {
+    const userId = req.user.id;
+    const refreshToken = req.headers.authorization
+      .replace('Bearer', '')
+      .replace('bearer', '')
+      .trim();
+
+    return this.authService.refreshTokens(userId, refreshToken);
+  }
+
+  @Post('logout')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Logout a user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Logout successful.',
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  async logout(@GetUser() user: { id: string; email: string; role: string }) {
+    return this.authService.logout(user.id);
   }
 }

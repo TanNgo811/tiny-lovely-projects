@@ -8,10 +8,16 @@ import { AuthGuard } from '@nestjs/passport';
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
   // You can override handleRequest for custom error handling if needed
-  handleRequest(err, user, info, context: ExecutionContext): any {
+  handleRequest(
+    err,
+    user,
+    info: {
+      message?: string;
+      name?: string;
+    },
+    context: ExecutionContext,
+  ): any {
     if (err || !user) {
-      // info can be JsonWebTokenError, TokenExpiredError, etc.
-      // console.error('JWT Auth Guard Error:', info?.message || err?.message);
       throw (
         err ||
         new UnauthorizedException(

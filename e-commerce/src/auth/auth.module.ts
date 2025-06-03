@@ -6,13 +6,14 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
 
 @Module({
   imports: [
     UsersModule, // To use UsersService
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
-      imports: [ConfigModule], // Make ConfigService available
+      imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'),
@@ -21,10 +22,10 @@ import { JwtStrategy } from './strategies/jwt.strategy';
         },
       }),
     }),
-    ConfigModule, // Ensure ConfigService is available if not global in AppModule
+    ConfigModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy], // Register JwtStrategy
-  exports: [AuthService, JwtModule, PassportModule], // Export for other modules if needed
+  providers: [AuthService, JwtStrategy, RefreshTokenStrategy],
+  exports: [AuthService, JwtModule, PassportModule],
 })
 export class AuthModule {}
