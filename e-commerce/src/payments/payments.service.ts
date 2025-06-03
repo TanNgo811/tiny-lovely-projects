@@ -23,7 +23,7 @@ export class PaymentsService {
       );
     }
     this.stripe = new Stripe(stripeSecretKey, {
-      apiVersion: '2024-04-10', // Use a fixed API version
+      typescript: true,
     });
   }
 
