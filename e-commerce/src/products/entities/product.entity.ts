@@ -50,4 +50,16 @@ export class Product {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @Column({
+    type: 'decimal',
+    precision: 3,
+    scale: 2,
+    nullable: true,
+    default: null,
+  })
+  averageRating: number | null;
+
+  @Column({ type: 'int', default: 0 })
+  reviewCount: number;
 }

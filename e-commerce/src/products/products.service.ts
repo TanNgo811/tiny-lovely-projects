@@ -6,7 +6,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, SelectQueryBuilder } from 'typeorm';
+import { QueryRunner, Repository, SelectQueryBuilder } from 'typeorm';
 import { Product } from './entities/product.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -200,5 +200,58 @@ export class ProductsService {
     }
     product.stockQuantity = newStock;
     return this.productsRepository.save(product);
+  }
+
+  async updateStockWithQueryRunner(
+    queryRunner: QueryRunner,
+    productId: string,
+    quantityChange: number,
+  ): Promise<Product> {
+    // Ensure quantityChange is positive for restocking and negative for stock deduction during sale.
+    // The OrdersService will pass positive quantity for restocking (cancellation).
+    const product = await queryRunner.manager.findOne(Product, {
+      where: { id: productId },
+    });
+    if (!product) {
+      throw new NotFoundException(
+        `Product with ID "${productId}" not found for stock update.`,
+      );
+    }
+    const newStock = product.stockQuantity + quantityChange; // e.g. stock 10, quantityChange +5 (restock) => 15. stock 10, quantityChange -2 (sale) => 8
+
+    // If quantityChange is negative (meaning a sale or stock deduction), check if stock is sufficient.
+    // This check is also done before creating order item, but good to have here for direct calls.
+    if (
+      quantityChange < 0 &&
+      product.stockQuantity < Math.abs(quantityChange)
+    ) {
+      throw new BadRequestException(
+        `Not enough stock for product "${product.name}". Available: ${product.stockQuantity}, Tried to deduct: ${Math.abs(quantityChange)}`,
+      );
+    }
+    // For restocking (quantityChange > 0), we generally don't have an upper limit unless business rules dictate.
+
+    product.stockQuantity = newStock;
+    if (product.stockQuantity < 0) {
+      // This should ideally not happen if checks are in place.
+      // Could indicate a concurrency issue if not handled by DB pessimistic locking for stock updates.
+      // For now, prevent stock from going below zero.
+      console.warn(
+        `Stock for product <span class="math-inline">\{productId\} attempted to go negative \(</span>{product.stockQuantity}), setting to 0.`,
+      );
+      product.stockQuantity = 0;
+    }
+    return queryRunner.manager.save(Product, product);
+  }
+
+  async updateProductAverageRating(
+    productId: string,
+    averageRating: number | null,
+    reviewCount: number,
+  ): Promise<void> {
+    await this.productsRepository.update(productId, {
+      averageRating,
+      reviewCount,
+    });
   }
 }

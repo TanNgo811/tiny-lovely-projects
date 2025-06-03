@@ -18,6 +18,11 @@ import { Product } from './products/entities/product.entity';
 import { CartModule } from './cart/cart.module';
 import { Cart } from './cart/entities/cart.entity';
 import { CartItem } from './cart/entities/cart-item.entity';
+import { OrdersModule } from './orders/orders.module';
+import { Order } from './orders/entities/order.entity';
+import { OrderItem } from './orders/entities/order-item.entity';
+import { ReviewsModule } from './reviews/reviews.module';
+import { Review } from './reviews/entities/review.entity';
 
 @Module({
   imports: [
@@ -35,7 +40,16 @@ import { CartItem } from './cart/entities/cart-item.entity';
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_DATABASE'),
-        entities: [User, Category, Product, Cart, CartItem], // Add other entities here as you create them
+        entities: [
+          User,
+          Category,
+          Product,
+          Cart,
+          CartItem,
+          Order,
+          OrderItem,
+          Review,
+        ], // Add other entities here as you create them
         synchronize: configService.get<boolean>('DB_SYNCHRONIZE', false), // Auto-create schema (dev only)
         autoLoadEntities: true, // Automatically load entities (recommended)
       }),
@@ -46,7 +60,8 @@ import { CartItem } from './cart/entities/cart-item.entity';
     CategoriesModule,
     ProductsModule,
     CartModule,
-    // Add other modules like ProductsModule, OrdersModule here later
+    OrdersModule,
+    ReviewsModule,
   ],
   controllers: [],
   providers: [ApiCounterMiddleware],

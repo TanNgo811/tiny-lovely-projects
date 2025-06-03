@@ -151,7 +151,7 @@ export class CartService {
     if (!cart || !cart.items) {
       // Return an empty cart structure if no cart exists or it's empty
       return {
-        id: null, // Or generate a temporary ID if you prefer
+        id: '', // Or generate a temporary ID if you prefer
         userId: userId,
         items: [],
         grandTotal: 0,
