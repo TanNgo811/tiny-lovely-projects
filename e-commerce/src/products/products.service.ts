@@ -52,6 +52,7 @@ export class ProductsService {
 
     const product: Product = this.productsRepository.create({
       ...restOfDto,
+      slug: restOfDto.slug || restOfDto.name.toLowerCase().replace(/\s+/g, '-'), // Ensure slug is set
       sku: sku,
       category: category, // Assign the category entity if found
       categoryId: category ? category.id : null, // Or just the ID
@@ -237,7 +238,7 @@ export class ProductsService {
       // Could indicate a concurrency issue if not handled by DB pessimistic locking for stock updates.
       // For now, prevent stock from going below zero.
       console.warn(
-        `Stock for product <span class="math-inline">\{productId\} attempted to go negative \(</span>{product.stockQuantity}), setting to 0.`,
+        `Stock for product <span class="math-inline">${productId} attempted to go negative(</span>{product.stockQuantity}), setting to 0.`,
       );
       product.stockQuantity = 0;
     }

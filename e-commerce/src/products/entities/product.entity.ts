@@ -62,4 +62,9 @@ export class Product {
 
   @Column({ type: 'int', default: 0 })
   reviewCount: number;
+
+  @Column({
+    type: 'text',
+  })
+  slug: string;
 }

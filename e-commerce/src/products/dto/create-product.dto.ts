@@ -9,6 +9,8 @@ import {
   IsUUID,
   IsUrl,
 } from 'class-validator';
+import { BeforeInsert } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 export class CreateProductDto {
   @ApiProperty({ example: 'Laptop Pro 15', description: 'Name of the product' })
@@ -65,4 +67,12 @@ export class CreateProductDto {
   @IsOptional()
   @IsUUID()
   categoryId?: string;
+
+  @ApiProperty({
+    example: 'Electronics',
+    description: 'Category name for the product',
+    required: false,
+  })
+  @IsOptional()
+  slug?: string; // Optional slug for SEO-friendly URLs
 }
