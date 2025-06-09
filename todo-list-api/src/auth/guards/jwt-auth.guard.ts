@@ -1,9 +1,14 @@
-import { Injectable, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  ExecutionContext,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Observable } from 'rxjs';
 
 @Injectable()
-export class JwtAuthGuard extends AuthGuard('jwt') { // 'jwt' refers to the strategy registered by JwtStrategy
+export class JwtAuthGuard extends AuthGuard('jwt') {
+  // 'jwt' refers to the strategy registered by JwtStrategy
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
@@ -15,7 +20,10 @@ export class JwtAuthGuard extends AuthGuard('jwt') { // 'jwt' refers to the stra
   handleRequest(err, user, info) {
     // You can throw an exception based on either "info" or "err" arguments
     if (err || !user) {
-      throw err || new UnauthorizedException(info?.message || 'User is not authenticated');
+      throw (
+        err ||
+        new UnauthorizedException(info?.message || 'User is not authenticated')
+      );
     }
     return user; // This user object will be attached to request.user
   }
